@@ -1,0 +1,161 @@
+<html manifest="cache.appcache">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mustafa PS5 Jailbreak</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <!-- ============================================================
+    HEADER
+    ============================================================ -->
+    <header class="header">
+        <div class="header-glow"></div>
+        <h1 class="title">
+            <span class="title-m">M</span>
+            <span class="title-u">u</span>
+            <span class="title-s">s</span>
+            <span class="title-t">t</span>
+            <span class="title-a1">a</span>
+            <span class="title-f">f</span>
+            <span class="title-a2">a</span>
+            <span class="title-space"></span>
+            <span class="title-p1">P</span>
+            <span class="title-s1">S</span>
+            <span class="title-4">4</span>
+            <span class="title-space"></span>
+            <span class="title-p2">P</span>
+            <span class="title-s2">S</span>
+            <span class="title-5">5</span>
+        </h1>
+        <p class="subtitle">UMTX2 Exploit · <span class="fw-range">1.xx - 5.50</span></p>
+        <p class="fw-info" id="top-bar-text">Current firmware: <span class="fw-bold" id="current-fw"></span></p>
+        <div id="toast-container"></div>
+    </header>
+
+    <!-- ============================================================
+    MAIN CONTENT
+    ============================================================ -->
+    <div id="main-content">
+        <div id="pre-jb-view" class="view selected">
+            <a tabindex="0" class="btn btn-primary" id="run-jb">JAILBREAK</a>
+            <a tabindex="0" class="btn btn-secondary" id="run-wk-only">WEBKIT ONLY</a>
+        </div>
+
+        <div id="console-view" class="view">
+            <div id="console" class="log"></div>
+        </div>
+
+        <div id="payloads-view" class="view"></div>
+    </div>
+
+    <!-- ============================================================
+    FOOTER
+    ============================================================ -->
+    <footer class="footer">
+        <p class="footer-version" id="version">v1.0</p>
+        <p class="footer-label">CREDITS</p>
+        <p class="footer-credits">
+            <a href="https://github.com/shahrilnet">shahrilnet</a> ·
+            <a href="https://github.com/n0llptr">n0llptr</a> ·
+            <a href="https://x.com/fail0verflow">fail0verflow</a> ·
+            <a href="https://twitter.com/flat_z">flat_z</a> ·
+            <a href="https://twitter.com/SpecterDev">SpecterDev</a> ·
+            ChendoChap · SlidyBat · abc/psfree · idlesauce ·
+            <a href="https://x.com/znullptr">znullptr</a> ·
+            <a href="https://twitter.com/notnotzecoxao">zecoxao</a> ·
+            <a href="https://twitter.com/SocraticBliss">SocraticBliss</a> ·
+            <a href="https://github.com/john-tornblom">John Tornblom</a> ·
+            <a href="https://discord.gg/kbrzGuH3F6">PS5 R&amp;D</a>
+        </p>
+        <div class="l2-box">
+            <span class="l2-key">L2</span>
+            <span class="l2-label">Redirect</span>
+        </div>
+    </footer>
+
+    <!-- ============================================================
+    SCRIPTS
+    ============================================================ -->
+    <script src="int64.js"></script>
+    <script src="rop.js"></script>
+    <script src="main.js"></script>
+    <script src="umtx2.js"></script>
+    <script src="custom_host_stuff.js"></script>
+    <script src="syscalls.js"></script>
+    <script type="module" src="psfree/psfree.js"></script>
+    <script src="payload_map.js"></script>
+
+    <script>
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.getElementById("current-fw").innerHTML = fw_str;
+        registerAppCacheEventHandlers();
+        registerL2ButtonHandler();
+
+        document.getElementById("run-jb").addEventListener("click", function() {
+            run(false);
+        });
+        document.getElementById("run-wk-only").addEventListener("click", function() {
+            run(true);
+        });
+
+        window.onload = function() {
+            let autoload = sessionStorage.getItem(SESSIONSTORE_ON_LOAD_AUTORUN_KEY);
+            if (autoload) {
+                run(autoload == "wkonly", false);
+            }
+        };
+
+        // ============================================================
+        // CACHE MANAGER - إدارة الكاش بالكامل
+        // ============================================================
+        (function() {
+            console.log('Cache Manager v8.0 - Full Cache');
+            
+            // التحقق من وجود AppCache
+            if (window.applicationCache) {
+                try {
+                    var status = window.applicationCache.status;
+                    console.log('AppCache status:', status);
+                    // 0 = UNCACHED, 1 = IDLE, 2 = CHECKING, 3 = DOWNLOADING, 4 = UPDATEREADY, 5 = OBSOLETE
+                    
+                    if (status === window.applicationCache.UPDATEREADY) {
+                        window.applicationCache.swapCache();
+                        console.log('✅ Cache swapped successfully');
+                    }
+                } catch (e) {
+                    console.log('AppCache error:', e.message);
+                }
+            } else {
+                console.warn('⚠️ AppCache not supported');
+            }
+            
+            // تنظيف التخزين المؤقت عند تغيير الإصدار
+            if (sessionStorage.getItem('cache_version') !== 'v8.0') {
+                try {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    sessionStorage.setItem('cache_version', 'v8.0');
+                    console.log('✅ Storage cleared - new cache version');
+                } catch (e) {
+                    console.log('Storage clear error:', e.message);
+                }
+            }
+            
+            console.log('✅ Cache Manager ready');
+            
+            // عرض حالة الكاش في الكونسول
+            if (window.applicationCache) {
+                var statusText = ['UNCACHED', 'IDLE', 'CHECKING', 'DOWNLOADING', 'UPDATEREADY', 'OBSOLETE'];
+                console.log('📦 Cache status:', statusText[window.applicationCache.status] || 'UNKNOWN');
+            }
+        })();
+    </script>
+
+</body>
+
+</html>
